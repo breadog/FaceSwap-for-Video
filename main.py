@@ -44,9 +44,14 @@
 #     plt.savefig('source_target.jpg', dpi=600, bbox_inches='tight')  ###保存高清图
 #
 #     cv2.imwrite('result.jpg', resultimg)
+# *********单张效果**************
+
 
 import cv2
 import os
+import subprocess
+import json
+import re
 from tqdm import tqdm  # 进度条工具
 from yolov8face import YOLOface_8n
 from face_68landmarks import face_68_landmarks
@@ -112,7 +117,10 @@ def batch_face_swap(
             ]
 
             if not valid_boxes:
-                print(f"警告：{filename} 中未检测到有效人脸，跳过")
+                #没有检测到有效人脸也要保存
+                print(f"警告：{filename} 中未检测到有效人脸")
+                original_output_path = os.path.join(output_dir, swapped_img)
+                cv2.imwrite(original_output_path, target_img)
                 continue
 
             # 处理每个检测到的人脸（默认处理第一个）
@@ -129,7 +137,96 @@ def batch_face_swap(
 
         except Exception as e:
             print(f"处理 {filename} 时发生错误：{str(e)}")
+            original_output_path = os.path.join(output_dir, f"swapped_{filename}")
+            cv2.imwrite(original_output_path, target_img)
             continue
+
+def get_audio_duration(audio_path):
+        """ 获取音频时长（秒） """
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-show_entries', 'format=duration',
+            '-of', 'json',
+            audio_path
+        ]
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            metadata = json.loads(result.stdout)
+            return float(metadata['format']['duration'])
+        except Exception as e:
+            print(f"无法获取音频时长: {str(e)}")
+            return None
+
+def generate_synced_video(
+        image_folder: str,
+        output_video_path: str,
+        audio_path: str,
+        image_prefix: str = 'swapped_frame_%04d.jpg'
+):
+    """
+    生成与音频严格同步的视频
+    :param image_folder: 包含处理后的图片目录
+    :param output_video_path: 输出视频路径
+    :param audio_path: 音频文件路径
+    :param image_prefix: 图片命名格式（如swapped_%04d.jpg）
+    """
+    # 获取有效图片列表并按数字排序
+    image_files = sorted(
+        [f for f in os.listdir(image_folder) if f.startswith('swapped_') and f.endswith(('.jpg', '.jpeg', '.png'))],
+        key=lambda x: int(re.search(r'(\d+)', x).group(1))  # 提取文件名中的数字部分排序
+    )
+
+    if len(image_files) == 0:
+        raise ValueError("没有找到处理后的图片文件")
+
+    # 自动修正图片前缀格式
+    sample_name = image_files[0]
+    base_name = os.path.splitext(sample_name)[0]  # 去除扩展名
+    match = re.search(r'(\d+)$', base_name)  # 匹配末尾的数字部分
+    if not match:
+        raise ValueError(f"文件名 {sample_name} 中未找到末尾的数字序列")
+
+    num_str = match.group(1)
+    padding = len(num_str)
+    prefix_part = base_name.rstrip(num_str)  # 获取数字前的固定前缀
+    actual_prefix = f"{prefix_part}%0{padding}d.jpg"  # 构造格式字符串
+    input_pattern = os.path.join(image_folder, actual_prefix)
+
+    # 获取音频时长
+    audio_duration = get_audio_duration(audio_path)
+    if audio_duration is None:
+        return
+
+    # 计算动态帧率
+    image_count = len(image_files)
+    required_fps = image_count / audio_duration
+
+    # 生成视频命令
+    ffmpeg_cmd = [
+        'ffmpeg', '-y',
+        '-r', str(required_fps),
+        '-i', input_pattern,
+        '-i', audio_path,
+        '-c:v', 'libx264',
+        '-c:a', 'aac',
+        '-pix_fmt', 'yuv420p',
+        '-vf', f'fps={required_fps},format=yuv420p',
+        '-map', '0:v:0',
+        '-map', '1:a:0',
+        '-shortest',
+        '-movflags', '+faststart',
+        output_video_path
+    ]
+
+    print(f"生成参数：图片数量={image_count} 音频时长={audio_duration:.2f}s 计算帧率={required_fps:.2f}")
+    print(f"FFmpeg命令: {' '.join(ffmpeg_cmd)}")
+
+    try:
+        subprocess.run(ffmpeg_cmd, check=True, stderr=subprocess.PIPE, text=True)
+        print(f"成功生成同步视频: {output_video_path}")
+    except subprocess.CalledProcessError as e:
+        print(f"视频生成失败: {e.stderr}")
+
 
 
 if __name__ == '__main__':
@@ -137,11 +234,21 @@ if __name__ == '__main__':
     SOURCE_IMAGE = "images/mjr.jpg"  # 源人脸图片
     TARGET_DIR = "video_frames/"  # 目标图片目录
     OUTPUT_DIR = "output_results/"  # 输出目录
+    AUDIO_PATH = "audio_output.mp3"
+    FINAL_VIDEO = "final_synced_video.mp4"
 
-    batch_face_swap(
-        source_img_path=SOURCE_IMAGE,
-        target_dir=TARGET_DIR,
-        output_dir=OUTPUT_DIR,
-        min_face_size=100,  # 过滤小于100x100的人脸
-        enable_enhance=True  # 启用图像增强
+    # batch_face_swap(
+    #     source_img_path=SOURCE_IMAGE,
+    #     target_dir=TARGET_DIR,
+    #     output_dir=OUTPUT_DIR,
+    #     min_face_size=100,  # 过滤小于100x100的人脸
+    #     enable_enhance=True  # 启用图像增强
+    # )
+
+    generate_synced_video(
+        image_folder=OUTPUT_DIR,
+        output_video_path=FINAL_VIDEO,
+        audio_path=AUDIO_PATH,
+        image_prefix='swapped_frame_%04d.jpg'
     )
+

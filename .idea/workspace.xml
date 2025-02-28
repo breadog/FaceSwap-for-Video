@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="225" />
+    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="225">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,6 +24,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;breadog&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/breadog/FaceSwap-for-Video.git&quot;,
+    &quot;accountId&quot;: &quot;6ee2742c-9c60-4808-9f5b-ec18c3bc8917&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
@@ -128,7 +144,9 @@
       <workItem from="1740404298333" duration="2849000" />
       <workItem from="1740460016201" duration="15985000" />
       <workItem from="1740496677176" duration="1821000" />
-      <workItem from="1740499462434" duration="328000" />
+      <workItem from="1740499462434" duration="972000" />
+      <workItem from="1740548085824" duration="7215000" />
+      <workItem from="1740725684332" duration="9849000" />
     </task>
     <task id="LOCAL-00001" summary="224">
       <option name="closed" value="true" />
@@ -146,11 +164,46 @@
       <option name="project" value="LOCAL" />
       <updated>1740499733968</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="225">
+      <option name="closed" value="true" />
+      <created>1740499919856</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1740499919856</updated>
+    </task>
+    <task id="LOCAL-00004" summary="225">
+      <option name="closed" value="true" />
+      <created>1740499954380</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1740499954380</updated>
+    </task>
+    <task id="LOCAL-00005" summary="225">
+      <option name="closed" value="true" />
+      <created>1740500029536</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1740500029536</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="224" />
@@ -158,8 +211,8 @@
     <option name="LAST_COMMIT_MESSAGE" value="225" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$test.coverage" NAME="test 覆盖结果" MODIFIED="1740488334884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$test.coverage" NAME="test 覆盖结果" MODIFIED="1740725749506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$video_processing.coverage" NAME="video_processing 覆盖结果" MODIFIED="1740497136606" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$main.coverage" NAME="main 覆盖结果" MODIFIED="1740497147294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$main.coverage" NAME="main 覆盖结果" MODIFIED="1740740339259" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
