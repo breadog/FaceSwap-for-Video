@@ -1,3 +1,4 @@
+import json
 import subprocess
 import os
 
@@ -13,7 +14,7 @@ def extract_frames_and_audio(video_path, output_frame_dir, output_audio_path):
     command = [
         'ffmpeg',
         '-i', video_path,  # 输入视频
-        '-vf', 'fps=120',  # 视频处理：每秒10帧
+        '-vsync', '0',  # 禁止帧同步（保留所有帧）
         '-q:v', '2',  # JPEG质量 (1-31, 2为最高质量)
         frame_pattern,  # 输出帧路径
         '-vn',  # 禁止处理视频流
@@ -32,8 +33,29 @@ def extract_frames_and_audio(video_path, output_frame_dir, output_audio_path):
         raise
 
 
+def get_video_info(video_path):
+    """获取原始视频信息"""
+    cmd = [
+        'ffprobe', '-v', 'error',
+        '-select_streams', 'v:0',
+        '-show_entries', 'stream=r_frame_rate,nb_frames',
+        '-of', 'json',
+        video_path
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    info = json.loads(result.stdout)
+
+    # 计算实际帧率
+    numerator, denominator = map(int, info['streams'][0]['r_frame_rate'].split('/'))
+    fps = numerator / denominator
+
+    return {
+        'fps': fps,
+        'total_frames': int(info['streams'][0]['nb_frames'])
+    }
+
 if __name__ == '__main__':
-    video_path = 'video/output.mp4'  # 输入视频路径
+    video_path = 'video/kobe.mp4'  # 输入视频路径
     output_frames = 'video_frames'  # 帧输出目录
     output_audio = 'audio_output.mp3'  # 音频输出路径
 
