@@ -256,12 +256,15 @@
 import cv2
 import os
 import subprocess
-import json
 import re
 import argparse
 import numpy as np
+from ffmpeg import output
+from matplotlib import pyplot as plt
 from tqdm import tqdm
 from collections import deque
+
+from face_locker import FaceLocker
 from video_processing import get_video_info, extract_frames_and_audio
 from yolov8face import YOLOface_8n
 from face_68landmarks import face_68_landmarks
@@ -286,84 +289,84 @@ MODELS = initialize_models()
 
 
 # ------------------------- 目标追踪类 -------------------------
-class FaceLocker:
-    """人脸锁定与追踪系统"""
-
-    def __init__(self, target_embedding):
-        self.target_embedding = target_embedding  # 目标人脸特征
-        self.tracker = None  # OpenCV跟踪器
-        self.landmark_history = deque(maxlen=5)  # 关键点历史记录
-        self.last_valid_box = None  # 最后有效区域
-        self.failure_count = 0  # 连续失败计数
-        self.tracking = False  # 当前追踪状态
-
-    def _box_to_rect(self, box):
-        """坐标转换：xyxy -> xywh"""
-        return (int(box[0]), int(box[1]), int(box[2] - box[0]), int(box[3] - box[1]))
-
-    def _match_target(self, frame, boxes):
-        """在检测到的人脸中匹配目标特征"""
-        best_match = None
-        max_similarity = 0
-
-        for box in boxes:
-            try:
-                # 提取人脸特征
-                _, landmark = MODELS['landmarker'].detect(frame, box)
-                _, embedding = MODELS['encoder'].detect(frame, landmark)
-
-                # 计算相似度
-                similarity = np.dot(self.target_embedding, embedding)
-                if similarity > max_similarity and similarity > 0.6:  # 相似度阈值
-                    max_similarity = similarity
-                    best_match = box
-            except Exception as e:
-                continue
-
-        return best_match, max_similarity
-
-    def update(self, frame):
-        """核心更新逻辑"""
-        # 阶段1：尝试跟踪现有目标
-        if self.tracking:
-            success, bbox = self.tracker.update(frame)
-            if success:
-                x, y, w, h = [int(v) for v in bbox]
-                current_box = np.array([x, y, x + w, y + h], dtype=np.float64)
-
-                # 验证追踪结果
-                _, similarity = self._match_target(frame, [current_box])
-                if similarity > 0.6:
-                    self.failure_count = 0
-                    return self._get_landmark(frame, current_box)
-
-            self.failure_count += 1
-
-            # 连续失败3次则重置
-            if self.failure_count >= 3:
-                self.tracking = False
-
-        # 阶段2：全局重新检测
-        boxes, _, _ = MODELS['detector'].detect(frame)
-        if not boxes:
-            return None
-
-        best_box, similarity = self._match_target(frame, boxes)
-        if best_box is not None:
-            # 初始化追踪器
-            self.tracker = cv2.TrackerKCF_create()
-            self.tracker.init(frame, self._box_to_rect(best_box))
-            self.tracking = True
-            self.failure_count = 0
-            return self._get_landmark(frame, best_box)
-
-        return None
-
-    def _get_landmark(self, frame, box):
-        """获取平滑后的关键点"""
-        _, landmark = MODELS['landmarker'].detect(frame, box)
-        self.landmark_history.append(landmark)
-        return np.mean(self.landmark_history, axis=0)
+# class FaceLocker:
+#     """人脸锁定与追踪系统"""
+#
+#     def __init__(self, target_embedding):
+#         self.target_embedding = target_embedding  # 目标人脸特征
+#         self.tracker = None  # OpenCV跟踪器
+#         self.landmark_history = deque(maxlen=5)  # 关键点历史记录
+#         self.last_valid_box = None  # 最后有效区域
+#         self.failure_count = 0  # 连续失败计数
+#         self.tracking = False  # 当前追踪状态
+#
+#     def _box_to_rect(self, box):
+#         """坐标转换：xyxy -> xywh"""
+#         return (int(box[0]), int(box[1]), int(box[2] - box[0]), int(box[3] - box[1]))
+#
+#     def _match_target(self, frame, boxes):
+#         """在检测到的人脸中匹配目标特征"""
+#         best_match = None
+#         max_similarity = 0
+#
+#         for box in boxes:
+#             try:
+#                 # 提取人脸特征
+#                 _, landmark = MODELS['landmarker'].detect(frame, box)
+#                 _, embedding = MODELS['encoder'].detect(frame, landmark)
+#
+#                 # 计算相似度
+#                 similarity = np.dot(self.target_embedding, embedding)
+#                 if similarity > max_similarity and similarity > 0.6:  # 相似度阈值
+#                     max_similarity = similarity
+#                     best_match = box
+#             except Exception as e:
+#                 continue
+#
+#         return best_match, max_similarity
+#
+#     def update(self, frame):
+#         """核心更新逻辑"""
+#         # 阶段1：尝试跟踪现有目标
+#         if self.tracking:
+#             success, bbox = self.tracker.update(frame)
+#             if success:
+#                 x, y, w, h = [int(v) for v in bbox]
+#                 current_box = np.array([x, y, x + w, y + h], dtype=np.float64)
+#
+#                 # 验证追踪结果
+#                 _, similarity = self._match_target(frame, [current_box])
+#                 if similarity > 0.6:
+#                     self.failure_count = 0
+#                     return self._get_landmark(frame, current_box)
+#
+#             self.failure_count += 1
+#
+#             # 连续失败3次则重置
+#             if self.failure_count >= 3:
+#                 self.tracking = False
+#
+#         # 阶段2：全局重新检测
+#         boxes, _, _ = MODELS['detector'].detect(frame)
+#         if not boxes:
+#             return None
+#
+#         best_box, similarity = self._match_target(frame, boxes)
+#         if best_box is not None:
+#             # 初始化追踪器
+#             self.tracker = cv2.TrackerKCF_create()
+#             self.tracker.init(frame, self._box_to_rect(best_box))
+#             self.tracking = True
+#             self.failure_count = 0
+#             return self._get_landmark(frame, best_box)
+#
+#         return None
+#
+#     def _get_landmark(self, frame, box):
+#         """获取平滑后的关键点"""
+#         _, landmark = MODELS['landmarker'].detect(frame, box)
+#         self.landmark_history.append(landmark)
+#         return np.mean(self.landmark_history, axis=0)
 
 
 # ------------------------- 核心处理流程 -------------------------
@@ -404,6 +407,7 @@ def process_video_frames(source_img_path, target_img_path, target_dir, output_di
         key=lambda x: int(re.findall(r'\d+', x)[-1])
     )
 
+    #进度条
     for frame_file in tqdm(frame_files, desc='Processing Frames'):
         frame_path = os.path.join(target_dir, frame_file)
         output_path = os.path.join(output_dir, f"swapped_{frame_file}")
@@ -475,39 +479,43 @@ def generate_video(input_dir, audio_path, output_path, original_fps):
         raise
 
 
-# ------------------------- 命令行接口 -------------------------
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser(description='定向人脸替换系统')
-#     parser.add_argument('--source', required=True, help='源人脸图片路径')
-#     parser.add_argument('--target', required=True, help='目标锁定图片路径')
-#     parser.add_argument('--target_dir', required=True, help='视频帧输入目录')
-#     parser.add_argument('--output_dir', required=True, help='处理后的帧输出目录')
-#     parser.add_argument('--audio', required=True, help='原始音频文件路径')
-#     parser.add_argument('--output_video', required=True, help='最终输出视频路径')
-#     parser.add_argument('--original_fps', required=True, help='原视频路径')
-#
-#     args = parser.parse_args()
-#
-#     video_info = get_video_info(args.original_video)
-#
-#     # 执行处理流程
-#     print("开始处理视频帧...")
-#     process_video_frames(
-#         source_img_path=args.source,
-#         target_img_path=args.target,
-#         target_dir=args.target_dir,
-#         output_dir=args.output_dir
-#     )
-#
-#     print("生成最终视频...")
-#     generate_video(
-#         input_dir=args.output_dir,
-#         audio_path=args.audio,
-#         output_path=args.output_video,
-#         original_fps=video_info['fps']
-#     )
-#
-#     print("处理完成！")
+# 单张处理
+def process_single_image(source_img, target_img):
+
+
+    detect_face_net = YOLOface_8n("weights/yoloface_8n.onnx")  # 人脸检测模型
+    detect_68landmarks_net = face_68_landmarks("weights/2dfan4.onnx")  # 人脸关键点检测模型
+    face_embedding_net = face_recognize('weights/arcface_w600k_r50.onnx')  # 人脸特征编码模型
+    swap_face_net = swap_face('weights/inswapper_128.onnx')  # 人脸替换模型
+    enhance_face_net = enhance_face('weights/gfpgan_1.4.onnx')  # 人脸增强模型
+
+    #### 处理源图像 ####
+    boxes, _, _ = detect_face_net.detect(source_img)  # 检测源图像中人脸的位置
+    position = 0  # 假设只处理检测到的第一个人脸
+    bounding_box = boxes[position]  # 获取第一个边界框
+    _, face_landmark_5of68 = detect_68landmarks_net.detect(source_img, bounding_box)  # 检测关键点
+    source_face_embedding, _ = face_embedding_net.detect(source_img, face_landmark_5of68)  # 生成特征向量
+
+    #### 处理目标图像 ####
+    boxes, _, _ = detect_face_net.detect(target_img)
+    position = 0  ###一张图片里可能有多个人脸，这里只考虑1个人脸的情况
+    bounding_box = boxes[position]
+    _, target_landmark_5 = detect_68landmarks_net.detect(target_img, bounding_box)
+
+    swapimg = swap_face_net.process(target_img, source_face_embedding, target_landmark_5)  # 替换人脸
+    resultimg = enhance_face_net.process(swapimg, target_landmark_5)  # 增强结果
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(source_img[:, :, ::-1])  ###plt库显示图像是RGB顺序
+    plt.axis('off')
+    plt.subplot(1, 2, 2)
+    plt.imshow(target_img[:, :, ::-1])
+    plt.axis('off')
+    # plt.show()
+    plt.savefig('source_target.jpg', dpi=600, bbox_inches='tight')  ###保存高清图
+
+    cv2.imwrite('result.jpg', resultimg)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='高精度人脸替换系统')

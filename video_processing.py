@@ -2,7 +2,7 @@ import json
 import subprocess
 import os
 
-
+# 分离视频帧和音频
 def extract_frames_and_audio(video_path, output_frame_dir, output_audio_path):
     # 创建输出目录
     os.makedirs(output_frame_dir, exist_ok=True)
