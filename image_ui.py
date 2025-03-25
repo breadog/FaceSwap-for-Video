@@ -1,5 +1,8 @@
+import re
 import sys
 import os
+import time
+
 import cv2
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -56,7 +59,13 @@ class ProcessingThread(QThread):
         super().__init__()
         self.source_path = source_path
         self.target_path = target_path
-        self.output_path = "result.jpg"  # 改为与处理函数相同的输出路径
+        
+        # 确保输出目录存在
+        os.makedirs("single_picture", exist_ok=True)
+        
+        # 生成带时间戳的输出路径
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        self.output_path = os.path.join("single_picture", f"result_{timestamp}.jpg")
 
     def run(self):
         try:
@@ -78,6 +87,28 @@ class ProcessingThread(QThread):
             # 调用换脸处理函数
             main.process_single_image(source_img, target_img)
             
+            # 等待文件写入完成
+            time.sleep(0.5)
+            
+            # 检查结果文件是否存在
+            if not os.path.exists("result.jpg"):
+                raise Exception("处理完成但未找到结果文件")
+            
+            # 读取结果图片
+            result_img = cv2.imread("result.jpg")
+            if result_img is None:
+                raise Exception("无法读取结果图片")
+            
+            # 保存到指定位置
+            if not cv2.imwrite(self.output_path, result_img):
+                raise Exception("无法保存结果图片")
+            
+            # 删除临时文件
+            try:
+                os.remove("result.jpg")
+            except Exception as e:
+                print(f"临时文件删除失败: {str(e)}")
+            
             self.progress_updated.emit(100)
             self.finished.emit(True, self.output_path)
         except Exception as e:
@@ -94,6 +125,7 @@ class ImageSwapWindow(QMainWindow):
             "source": None,
             "target": None
         }
+
 
     def setup_ui(self):
         main_widget = QWidget()
@@ -282,9 +314,16 @@ class ImageSwapWindow(QMainWindow):
         self.process_btn.setEnabled(True)
 
         if success:
-            # 显示结果图片
-            pixmap = QPixmap(result)
-            if not pixmap.isNull():
+            # 读取并显示结果图片
+            result_img = cv2.imread(result)
+            if result_img is not None:
+                # 将OpenCV的BGR图像转换为RGB
+                rgb_img = cv2.cvtColor(result_img, cv2.COLOR_BGR2RGB)
+                height, width = rgb_img.shape[:2]
+                bytes_per_line = 3 * width
+                q_img = QImage(rgb_img.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                pixmap = QPixmap.fromImage(q_img)
+                
                 scaled_pixmap = pixmap.scaled(
                     self.output_image.size(),
                     Qt.KeepAspectRatio,
@@ -307,6 +346,7 @@ class ImageSwapWindow(QMainWindow):
         """切换到视频模式"""
         from ui import MainWindow
         self.video_window = MainWindow()
+        self.video_window.resize(self.size())
         self.video_window.show()
         self.close()
 

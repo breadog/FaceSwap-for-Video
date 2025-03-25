@@ -45,7 +45,7 @@
 #
 #     cv2.imwrite('result.jpg', resultimg)
 # *********单张效果**************
-
+import datetime
 
 # import cv2
 # import os
@@ -370,7 +370,7 @@ MODELS = initialize_models()
 
 
 # ------------------------- 核心处理流程 -------------------------
-def process_video_frames(source_img_path, target_img_path, target_dir, output_dir, original_fps):
+def process_video_frames(source_img_path, target_img_path, target_dir, output_dir, original_fps, status_callback=None):
     """处理视频帧的主流程"""
     # 初始化源特征
     source_img = cv2.imread(source_img_path)
@@ -409,9 +409,11 @@ def process_video_frames(source_img_path, target_img_path, target_dir, output_di
 
     #进度条
     for frame_file in tqdm(frame_files, desc='Processing Frames'):
-        frame_path = os.path.join(target_dir, frame_file)
-        output_path = os.path.join(output_dir, f"swapped_{frame_file}")
-        frame = cv2.imread(frame_path)
+        if status_callback:
+            status_callback(f"正在处理 {frame_file}")
+            frame_path = os.path.join(target_dir, frame_file)
+            output_path = os.path.join(output_dir, f"swapped_{frame_file}")
+            frame = cv2.imread(frame_path)
 
         if frame is None:
             print(f"警告：无法读取 {frame_file}，跳过")
@@ -489,6 +491,24 @@ def process_single_image(source_img, target_img):
     swap_face_net = swap_face('weights/inswapper_128.onnx')  # 人脸替换模型
     enhance_face_net = enhance_face('weights/gfpgan_1.4.onnx')  # 人脸增强模型
 
+    output_dir = "single_picture"  # 指定目录
+
+    # 获取当前最大序号
+    existing_files = [f for f in os.listdir(output_dir)
+                      if re.match(r"result_\d{4}\.jpg", f)]
+
+    if existing_files:
+        # 提取所有序号并找到最大值
+        max_num = max(int(re.search(r"_(\d{4})\.jpg", f).group(1))
+                      for f in existing_files)
+        new_num = max_num + 1
+    else:
+        new_num = 1  # 初始序号从0001开始
+
+    # 生成新文件名（固定4位数字补零）
+    new_filename = f"result_{new_num:04d}.jpg"
+    output_path = os.path.join(output_dir, new_filename)
+
     #### 处理源图像 ####
     boxes, _, _ = detect_face_net.detect(source_img)  # 检测源图像中人脸的位置
     position = 0  # 假设只处理检测到的第一个人脸
@@ -505,6 +525,7 @@ def process_single_image(source_img, target_img):
     swapimg = swap_face_net.process(target_img, source_face_embedding, target_landmark_5)  # 替换人脸
     resultimg = enhance_face_net.process(swapimg, target_landmark_5)  # 增强结果
 
+
     plt.subplot(1, 2, 1)
     plt.imshow(source_img[:, :, ::-1])  ###plt库显示图像是RGB顺序
     plt.axis('off')
@@ -512,9 +533,10 @@ def process_single_image(source_img, target_img):
     plt.imshow(target_img[:, :, ::-1])
     plt.axis('off')
     # plt.show()
-    plt.savefig('source_target.jpg', dpi=600, bbox_inches='tight')  ###保存高清图
+    # plt.savefig('source_target.jpg', dpi=600, bbox_inches='tight')  ###保存高清图
 
-    cv2.imwrite('result.jpg', resultimg)
+
+    cv2.imwrite(output_path, resultimg)
 
 
 if __name__ == '__main__':
