@@ -4,14 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="3/22 UI界面设计 、 QQ-api未完成">
+    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="3/25 实时换脸功能初步实现">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_68landmarks.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_68landmarks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_enhancer.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_enhancer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_recognizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_recognizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_swap.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_swap.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/image_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/image_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/realtime_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/realtime_ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/result.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/source_target.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolov8face.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolov8face.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,37 +55,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.UI.executor": "Run",
-    "Python.image_ui.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.realtime_face_swap.executor": "Run",
-    "Python.realtime_ui.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.ui (1).executor": "Run",
-    "Python.ui.executor": "Run",
-    "Python.video_processing.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/breadog/PycharmProjects/faceswap_facefusion/images",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.UI.executor&quot;: &quot;Run&quot;,
+    &quot;Python.image_ui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.realtime_face_swap.executor&quot;: &quot;Run&quot;,
+    &quot;Python.realtime_ui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ui (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.ui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.video_processing.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/breadog/PycharmProjects/faceswap_facefusion/images&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\breadog\PycharmProjects\faceswap_facefusion\images" />
       <recent name="C:\Users\breadog\PycharmProjects\faceswap_facefusion\video" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.realtime_ui">
+  <component name="RunManager" selected="Python.ui">
     <configuration name="image_ui" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="faceswap_facefusion" />
       <option name="ENV_FILES" value="" />
@@ -196,18 +202,18 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.realtime_ui" />
-      <item itemvalue="Python.realtime_face_swap" />
       <item itemvalue="Python.image_ui" />
-      <item itemvalue="Python.ui" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.realtime_face_swap" />
+      <item itemvalue="Python.realtime_ui" />
+      <item itemvalue="Python.ui" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.realtime_ui" />
-        <item itemvalue="Python.realtime_face_swap" />
         <item itemvalue="Python.ui" />
         <item itemvalue="Python.image_ui" />
+        <item itemvalue="Python.realtime_ui" />
+        <item itemvalue="Python.realtime_face_swap" />
         <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
@@ -258,7 +264,10 @@
       <workItem from="1742657612434" duration="1403000" />
       <workItem from="1742800077514" duration="8803000" />
       <workItem from="1742877241247" duration="1960000" />
-      <workItem from="1742914420838" duration="2488000" />
+      <workItem from="1742914420838" duration="2749000" />
+      <workItem from="1742917301051" duration="164000" />
+      <workItem from="1742995396761" duration="2521000" />
+      <workItem from="1743162828431" duration="7895000" />
     </task>
     <task id="LOCAL-00001" summary="224">
       <option name="closed" value="true" />
@@ -340,7 +349,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742633847273</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="3/25 实时换脸功能初步实现">
+      <option name="closed" value="true" />
+      <created>1742917101379</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1742917101379</updated>
+    </task>
+    <task id="LOCAL-00012" summary="3/25 实时换脸功能初步实现">
+      <option name="closed" value="true" />
+      <created>1742917248220</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1742917248220</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -363,17 +388,18 @@
     <MESSAGE value="226 -音画同步" />
     <MESSAGE value="3/4 人脸追踪 + 帧数合并" />
     <MESSAGE value="3/22 UI界面设计 、 QQ-api未完成" />
-    <option name="LAST_COMMIT_MESSAGE" value="3/22 UI界面设计 、 QQ-api未完成" />
+    <MESSAGE value="3/25 实时换脸功能初步实现" />
+    <option name="LAST_COMMIT_MESSAGE" value="3/25 实时换脸功能初步实现" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/faceswap_facefusion$UI.coverage" NAME="ui 覆盖结果" MODIFIED="1742553495130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$ui__1_.coverage" NAME="ui (1) 覆盖结果" MODIFIED="1742567304173" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$test.coverage" NAME="test 覆盖结果" MODIFIED="1740743036190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$video_processing.coverage" NAME="video_processing 覆盖结果" MODIFIED="1741102693688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1742808896535" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743169938343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$main.coverage" NAME="main 覆盖结果" MODIFIED="1742556813466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_ui.coverage" NAME="realtime_ui 覆盖结果" MODIFIED="1742916675031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$image_ui.coverage" NAME="image_ui 覆盖结果" MODIFIED="1742800762089" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_ui.coverage" NAME="realtime_ui 覆盖结果" MODIFIED="1743164061618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$image_ui.coverage" NAME="image_ui 覆盖结果" MODIFIED="1743166107168" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_face_swap.coverage" NAME="realtime_face_swap 覆盖结果" MODIFIED="1742879173551" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

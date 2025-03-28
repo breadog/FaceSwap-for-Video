@@ -14,23 +14,28 @@
 # print(f"CUDA设备名称:{torch.cuda.get_device_name(cuda_id)}")
 
 # import onnxruntime
-# print(onnxruntime.__version__)
-# print(onnxruntime.get_device() ) # 如果得到的输出结果是GPU，所以按理说是找到了GPU的
-# ort_session = onnxruntime.InferenceSession("weights/yoloface_8n.onnx",
+# # print(onnxruntime.__version__)
+# # print(onnxruntime.get_device() ) # 如果得到的输出结果是GPU，所以按理说是找到了GPU的
+# ort_session = onnxruntime.InferenceSession("weights/inswapper_128.onnx",
 # providers=['CUDAExecutionProvider'])
 # print(ort_session.get_providers())
 
-import onnxruntime
+# import onnxruntime
+#
+# # 查看所有可用的 Execution Providers
+# print(onnxruntime.get_available_providers())
+#
+# # 尝试强制使用 CUDA
+# try:
+#     ort_session = onnxruntime.InferenceSession(
+#         "weights/inswapper_128.onnx",
+#         providers=['CUDAExecutionProvider']
+#     )
+#     print("成功使用 CUDAExecutionProvider")
+# except Exception as e:
+#     print(f"无法使用 CUDAExecutionProvider: {e}")
 
-# 查看所有可用的 Execution Providers
-print(onnxruntime.get_available_providers())
-
-# 尝试强制使用 CUDA
-try:
-    ort_session = onnxruntime.InferenceSession(
-        "weights/inswapper_128.onnx",
-        providers=['CUDAExecutionProvider']
-    )
-    print("成功使用 CUDAExecutionProvider")
-except Exception as e:
-    print(f"无法使用 CUDAExecutionProvider: {e}")
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())  # 应输出True
+print(torch.backends.cudnn.version())  # 应显示cuDNN版本

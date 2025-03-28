@@ -1,8 +1,8 @@
+import shutil
 import sys
 import os
 import cv2
 import time
-import shutil
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QFileDialog, QProgressBar, QSlider
@@ -138,8 +138,6 @@ class ProcessingThread(QThread):
     stage_updated = pyqtSignal(str)  # 阶段更新信号
     processing_finished = pyqtSignal(bool)  # 处理完成信号，带成功/失败状态
 
-    progress_updated = pyqtSignal(int)
-
     def __init__(self, source, target, video):
         super().__init__()
         self.source = source
@@ -151,7 +149,7 @@ class ProcessingThread(QThread):
 
     def run(self):
         try:
-            # # 获取视频信息
+            # 获取视频信息
             video_info = video_processing.get_video_info(self.video)
             original_fps = video_info['fps']
             self.total_frames = video_info['total_frames']
@@ -166,24 +164,32 @@ class ProcessingThread(QThread):
 
             # 阶段2: 处理视频帧
             self.stage_updated.emit("正在处理视频帧...")
-            total_frames = len(os.listdir(os.path.join('temp_frames')))
-            processed_frames = 0
 
-            for frame_file in os.listdir(os.path.join('temp_frames')):
-                main.process_video_frames(
-                    source_img_path=self.source,
-                    target_img_path=self.target,
-                    target_dir=os.path.join('temp_frames'),
-                    output_dir=os.path.join('temp_frames/processed'),
-                    original_fps=original_fps,
-                    status_callback=lambda msg: self.stage_updated.emit(msg)
-                )
-                processed_frames += 1
-                progress = int((processed_frames / total_frames) * 100)
-                self.progress_updated.emit(progress)
+            target_files = [f for f in os.listdir('temp_frames')
+                            if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+            total_frames = len(target_files)
 
-            # 更新进度到100%
-            # self.progress_updated.emit(100)
+            for idx, frame_file in enumerate(target_files):
+                frame_path = os.path.join('temp_frames', frame_file)
+                output_path = os.path.join('temp_frames/processed', f"swapped_{frame_file}")
+
+                # 严格验证帧有效性
+                frame = cv2.imread(frame_path)
+                if frame is None:
+                    print(f"跳过无效帧: {frame_file}")
+                    shutil.copy(frame_path, output_path)
+                    continue
+
+            main.process_video_frames(
+                source_img_path=self.source,
+                target_img_path=self.target,
+                target_dir=os.path.join('temp_frames'),
+                output_dir=os.path.join('temp_frames/processed'),
+                original_fps=original_fps,
+            )
+
+            progress = int((idx + 1) / total_frames * 100)
+            self.progress_updated.emit(progress)
 
             # 阶段3: 生成视频
             self.stage_updated.emit("正在生成最终视频...")
@@ -229,15 +235,13 @@ class MainWindow(QMainWindow):
         self.media_player.positionChanged.connect(self.on_media_position_changed)
         self.media_player.durationChanged.connect(self.on_media_duration_changed)
 
-
-
     def setup_ui(self):
         main_widget = QWidget()
         layout = QVBoxLayout()
 
         # 顶部工具栏
         toolbar_layout = QHBoxLayout()
-
+        
         # 刷新按钮
         self.btn_refresh = QPushButton("⟳ 刷新")
         self.btn_refresh.clicked.connect(self.restart_ui)
@@ -316,9 +320,8 @@ class MainWindow(QMainWindow):
         self.progress = QProgressBar()
         self.progress.setVisible(False)
         self.progress.setMinimum(0)
-        self.progress.setMaximum(self.source_video.total_frames)
-
-        self.progress.setFormat("已处理 %v/%m 帧")  # 修改格式
+        self.progress.setMaximum(100)
+        self.progress.setFormat("%p% (%v/%m 帧)")
         
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignCenter)
@@ -340,11 +343,10 @@ class MainWindow(QMainWindow):
         self.btn_switch_mode.clicked.connect(self.switch_to_image_mode)
         self.btn_switch_mode.setMinimumHeight(40)
         
-        # 分享到QQ空间按钮
-        self.btn_share = QPushButton("分享到QQ空间")
-        self.btn_share.clicked.connect(self.share_to_qzone)
-        self.btn_share.setMinimumHeight(40)
-        self.btn_share.setEnabled(False)  # 初始状态禁用，等处理完成后启用
+        # 切换到摄像头模式按钮
+        self.btn_camera = QPushButton("切换到摄像头模式")
+        self.btn_camera.clicked.connect(self.switch_to_camera_mode)
+        self.btn_camera.setMinimumHeight(40)
         
         # 设置按钮样式
         button_style = """
@@ -365,11 +367,11 @@ class MainWindow(QMainWindow):
         """
         self.btn_process.setStyleSheet(button_style)
         self.btn_switch_mode.setStyleSheet(button_style)
-        self.btn_share.setStyleSheet(button_style)
+        self.btn_camera.setStyleSheet(button_style)
         
         bottom_layout.addWidget(self.btn_process)
         bottom_layout.addWidget(self.btn_switch_mode)
-        bottom_layout.addWidget(self.btn_share)
+        bottom_layout.addWidget(self.btn_camera)
 
         # 组装界面
         layout.addLayout(toolbar_layout)  # 添加工具栏
@@ -419,25 +421,19 @@ class MainWindow(QMainWindow):
 
     def start_processing(self):
 
+        temp_dir = "temp_frames"
+        try:
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)  # 递归删除整个目录
+                print(f"已清理临时目录: {temp_dir}")
+            os.makedirs(temp_dir, exist_ok=True)  # 重新创建空目录
+        except Exception as e:
+            self.show_status(f"清理临时文件失败: {str(e)}", error=True)
+            return  # 终止处理流程
+
         if not all(self.file_paths.values()):
             self.show_status("请先拖拽所有必需文件！", error=True)
             return
-
-        # ------------------ 新增代码：清理临时文件夹 ------------------
-        temp_dir = "temp_frames"
-        try:
-            # 删除整个 temp_frames 文件夹（包括所有子文件和子目录）
-            if os.path.exists(temp_dir):
-                shutil.rmtree(temp_dir)
-                print(f"已清除临时文件夹: {temp_dir}")
-
-                # 重新创建空文件夹
-            os.makedirs(temp_dir, exist_ok=True)
-            self.show_status("临时文件夹已重置")
-        except Exception as e:
-            self.show_status(f"清理临时文件夹失败: {str(e)}", error=True)
-            return  # 终止处理流程
-        # -----------------------------------------------------------
 
         self.progress.setVisible(True)
         self.progress.setValue(0)
@@ -454,8 +450,6 @@ class MainWindow(QMainWindow):
         self.worker.start()
 
     def update_progress(self, value):
-        total_frames = self.source_video.total_frames
-        self.progress.setMaximum(total_frames)
         self.progress.setValue(value)
 
     def update_status(self, message):
@@ -497,9 +491,6 @@ class MainWindow(QMainWindow):
                 first_frame = self.output_video.get_frame(0)
                 if first_frame is not None:
                     self.display_frame(self.output_video, first_frame)
-                
-                # 启用分享按钮
-                self.btn_share.setEnabled(True)
                 
                 # 更新显示
                 self.update_frames()
@@ -655,28 +646,17 @@ class MainWindow(QMainWindow):
 
     def switch_to_image_mode(self):
         # TODO: 实现切换到单图模式的功能
-
         from image_ui import ImageSwapWindow
         self.image_window = ImageSwapWindow()
-        self.image_window.resize(self.size())
         self.image_window.show()
         self.close()
 
-    def share_to_qzone(self):
-        try:
-            output_path = os.path.abspath("output.mp4")
-            if not os.path.exists(output_path):
-                raise FileNotFoundError("没有可分享的视频")
-
-            # 构建QQ空间分享链接
-            share_url = f"https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url={output_path}"
-            # 使用默认浏览器打开分享链接
-            import webbrowser
-            webbrowser.open(share_url)
-
-            self.show_status("正在打开QQ空间分享页面...")
-        except Exception as e:
-            self.show_status(f"分享失败：{str(e)}", error=True)
+    def switch_to_camera_mode(self):
+        # TODO: 实现切换到摄像头模式的功能
+        from realtime_ui import RealtimeFaceSwapWindow
+        self.realtime_window = RealtimeFaceSwapWindow()
+        self.realtime_window.show()
+        self.close()
 
     def restart_ui(self):
         """重启UI"""

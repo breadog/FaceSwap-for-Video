@@ -1,10 +1,9 @@
-# realtime_ui.py
 import sys
 import cv2
 import numpy as np
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QLabel, QFileDialog
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QFileDialog, QPushButton
 )
 from PyQt5.QtCore import Qt, QTimer, QMutex, pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap, QDragEnterEvent, QDropEvent
@@ -86,7 +85,7 @@ class CameraWidget(QLabel):
 class RealtimeFaceSwapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("实时人脸替换")
+        self.setWindowTitle("实时人脸替换 - 摄像头")
         self.source_embedding = None
         self.setup_ui()
         self.last_valid_box = None
@@ -99,31 +98,87 @@ class RealtimeFaceSwapWindow(QMainWindow):
 
     def setup_ui(self):
         main_widget = QWidget()
-        layout = QVBoxLayout()
+        main_layout = QVBoxLayout()
+        control_layout = QHBoxLayout()
+
+        # 切换到视频模式按钮
+        self.btn_video_mode = QPushButton("切换到视频处理")
+        self.btn_video_mode.setStyleSheet("""
+                    QPushButton {
+                        background-color: #2196F3;
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        min-width: 120px;
+                    }
+                    QPushButton:hover { background-color: #1976D2; }
+                """)
+        self.btn_video_mode.clicked.connect(self.switch_to_video_mode)
+
+        # 切换到图片模式按钮
+        self.btn_image_mode = QPushButton("切换到图片处理")
+        self.btn_image_mode.setStyleSheet("""
+                    QPushButton {
+                        background-color: #4CAF50;
+                        color: white;
+                        padding: 8px 16px;
+                        border-radius: 5px;
+                        min-width: 120px;
+                    }
+                    QPushButton:hover { background-color: #45a049; }
+                """)
+        self.btn_image_mode.clicked.connect(self.switch_to_image_mode)
+
+        control_layout.addWidget(self.btn_video_mode)
+        control_layout.addWidget(self.btn_image_mode)
+        control_layout.addStretch()
+        main_layout.addLayout(control_layout)
 
         # 拖拽区域
         self.drop_area = DragDropLabel("拖拽源人脸图片至此\n(.jpg, .png)", (".jpg", ".png"))
         self.drop_area.fileDropped.connect(self.load_source_image)
-        layout.addWidget(self.drop_area)
+        main_layout.addWidget(self.drop_area)
 
         # 摄像头显示区域
         self.camera_view = CameraWidget()
         self.camera_view.setMinimumSize(640, 480)
-        layout.addWidget(self.camera_view)
+        main_layout.addWidget(self.camera_view)
 
-        # 状态标签
-        self.status_label = QLabel("等待源图片...")
-        self.status_label.setAlignment(Qt.AlignCenter)
+        # ======== 底部状态栏 ========
+        self.status_label = QLabel("就绪 | 等待源人脸图片")
         self.status_label.setStyleSheet("color: #666; font-size: 12px;")
-        layout.addWidget(self.status_label)
+        main_layout.addWidget(self.status_label)
 
         # 处理定时器
         self.timer = QTimer()
         self.timer.timeout.connect(self.process_frame)
 
-        main_widget.setLayout(layout)
+        main_widget.setLayout(main_layout)
         self.setCentralWidget(main_widget)
-        self.resize(800, 600)
+        self.resize(1280, 800)
+
+    def switch_to_video_mode(self):
+        """切换到视频处理模式"""
+        from ui import MainWindow  # 延迟导入避免循环依赖
+        self.close()
+        video_window = MainWindow()
+        video_window.show()
+
+    def switch_to_image_mode(self):
+        """切换到图片处理模式"""
+        from image_ui import ImageSwapWindow  # 延迟导入避免循环依赖
+        self.close()
+        image_window = ImageSwapWindow()
+        image_window.show()
+
+    # ... 保持 load_source_image、process_frame 等方法不变 ...
+
+    def closeEvent(self, event):
+        """窗口关闭时释放资源"""
+        self.timer.stop()
+        self.camera_view.release()
+        cv2.destroyAllWindows()
+        event.accept()
 
     def load_source_image(self, file_path):
         """加载源图片"""

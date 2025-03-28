@@ -8,7 +8,7 @@ class face_recognize:
     def __init__(self, modelpath):
         session_option = onnxruntime.SessionOptions()
         session_option.log_severity_level = 3
-        self.session = onnxruntime.InferenceSession(modelpath, providers=['CUDAExecutionProvider'])
+        self.session = onnxruntime.InferenceSession(modelpath, providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
 
         model_inputs = self.session.get_inputs()
         self.input_names = [model_inputs[i].name for i in range(len(model_inputs))]

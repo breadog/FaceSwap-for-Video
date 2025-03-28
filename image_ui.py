@@ -253,8 +253,29 @@ class ImageSwapWindow(QMainWindow):
             }
         """)
 
+        # 切换到摄像头模式
+        self.realtime_btn = QPushButton("实时换脸模式")
+        self.realtime_btn.clicked.connect(self.switch_to_realtime_mode)
+        self.realtime_btn.setMinimumHeight(40)
+        self.realtime_btn.setStyleSheet("""
+                    QPushButton {
+                        background-color: #FF9800;
+                        color: white;
+                        border: none;
+                        border-radius: 5px;
+                        padding: 8px 16px;
+                        font-size: 14px;
+                        min-width: 120px;
+                    }
+                    QPushButton:hover { 
+                        background-color: #F57C00; 
+                    }
+                """)
+
+
         button_layout.addWidget(self.process_btn)
         button_layout.addWidget(self.switch_btn)
+        button_layout.addWidget(self.realtime_btn)
         layout.addLayout(button_layout)
 
         main_widget.setLayout(layout)
@@ -349,6 +370,16 @@ class ImageSwapWindow(QMainWindow):
         self.video_window.resize(self.size())
         self.video_window.show()
         self.close()
+
+    def switch_to_realtime_mode(self):
+        """切换到实时摄像头模式"""
+        from realtime_ui import RealtimeFaceSwapWindow  # 延迟导入避免循环依赖
+
+        self.realtime_window = RealtimeFaceSwapWindow()
+        self.realtime_window.resize(self.size())
+        self.realtime_window.show()
+        self.close()
+
 
 if __name__ == "__main__":
     try:

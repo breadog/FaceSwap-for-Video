@@ -9,7 +9,7 @@ class face_68_landmarks:
         # Initialize model
         session_option = onnxruntime.SessionOptions()
         session_option.log_severity_level = 3
-        self.session = onnxruntime.InferenceSession(modelpath, providers=['CUDAExecutionProvider'])
+        self.session = onnxruntime.InferenceSession(modelpath, providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
         # self.session = onnxruntime.InferenceSession(modelpath, sess_options=session_option)  ###opencv-dnn读取onnx失败
         model_inputs = self.session.get_inputs()
         self.input_names = [model_inputs[i].name for i in range(len(model_inputs))]

@@ -409,13 +409,15 @@ def process_video_frames(source_img_path, target_img_path, target_dir, output_di
 
     #进度条
     for frame_file in tqdm(frame_files, desc='Processing Frames'):
-        if status_callback:
-            status_callback(f"正在处理 {frame_file}")
-            frame_path = os.path.join(target_dir, frame_file)
-            output_path = os.path.join(output_dir, f"swapped_{frame_file}")
-            frame = cv2.imread(frame_path)
+        # 将 frame_path 和 output_path 的赋值移到条件判断外
+        frame_path = os.path.join(target_dir, frame_file)
+        output_path = os.path.join(output_dir, f"swapped_{frame_file}")
+        frame = cv2.imread(frame_path)  # 确保每次循环都读取帧
 
-        if frame is None:
+        if status_callback:
+            status_callback(f"正在处理 {frame_file}")  # 仅发送状态回调
+
+        if frame is None:  # 此时 frame 已被正确赋值
             print(f"警告：无法读取 {frame_file}，跳过")
             continue
 
