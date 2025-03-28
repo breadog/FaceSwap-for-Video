@@ -437,7 +437,11 @@ class MainWindow(QMainWindow):
 
         self.progress.setVisible(True)
         self.progress.setValue(0)
+
+        #启动换脸后先隐藏按钮
         self.btn_process.setEnabled(False)
+        self.btn_camera.setEnabled(False)
+        self.btn_switch_mode.setEnabled(False)
 
         self.worker = ProcessingThread(
             self.file_paths["source"],
@@ -458,7 +462,10 @@ class MainWindow(QMainWindow):
     def on_processing_finished(self, success):
         try:
             self.progress.setVisible(False)
+
             self.btn_process.setEnabled(True)
+            self.btn_camera.setEnabled(True)
+            self.btn_switch_mode.setEnabled(True)
             
             if success:
                 # 确保输出视频文件存在

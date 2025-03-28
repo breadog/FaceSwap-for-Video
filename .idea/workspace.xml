@@ -4,20 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="3/25 实时换脸功能初步实现">
+    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="3/28 修补">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/face_68landmarks.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_68landmarks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/face_enhancer.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_enhancer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/face_recognizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_recognizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/face_swap.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_swap.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/image_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/realtime_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/realtime_ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/result.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/source_target.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolov8face.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolov8face.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -267,7 +256,7 @@
       <workItem from="1742914420838" duration="2749000" />
       <workItem from="1742917301051" duration="164000" />
       <workItem from="1742995396761" duration="2521000" />
-      <workItem from="1743162828431" duration="7895000" />
+      <workItem from="1743162828431" duration="8864000" />
     </task>
     <task id="LOCAL-00001" summary="224">
       <option name="closed" value="true" />
@@ -365,7 +354,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742917248220</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="3/28 修补">
+      <option name="closed" value="true" />
+      <created>1743171774609</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1743171774609</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -389,14 +386,15 @@
     <MESSAGE value="3/4 人脸追踪 + 帧数合并" />
     <MESSAGE value="3/22 UI界面设计 、 QQ-api未完成" />
     <MESSAGE value="3/25 实时换脸功能初步实现" />
-    <option name="LAST_COMMIT_MESSAGE" value="3/25 实时换脸功能初步实现" />
+    <MESSAGE value="3/28 修补" />
+    <option name="LAST_COMMIT_MESSAGE" value="3/28 修补" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/faceswap_facefusion$UI.coverage" NAME="ui 覆盖结果" MODIFIED="1742553495130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$ui__1_.coverage" NAME="ui (1) 覆盖结果" MODIFIED="1742567304173" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$test.coverage" NAME="test 覆盖结果" MODIFIED="1740743036190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$video_processing.coverage" NAME="video_processing 覆盖结果" MODIFIED="1741102693688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743169938343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743172538225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$main.coverage" NAME="main 覆盖结果" MODIFIED="1742556813466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_ui.coverage" NAME="realtime_ui 覆盖结果" MODIFIED="1743164061618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$image_ui.coverage" NAME="image_ui 覆盖结果" MODIFIED="1743166107168" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
