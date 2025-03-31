@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="3/28 修补">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image_ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/image_ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -256,7 +258,8 @@
       <workItem from="1742914420838" duration="2749000" />
       <workItem from="1742917301051" duration="164000" />
       <workItem from="1742995396761" duration="2521000" />
-      <workItem from="1743162828431" duration="8864000" />
+      <workItem from="1743162828431" duration="9111000" />
+      <workItem from="1743412440239" duration="6882000" />
     </task>
     <task id="LOCAL-00001" summary="224">
       <option name="closed" value="true" />
@@ -362,7 +365,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743171774609</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="3/28 修补">
+      <option name="closed" value="true" />
+      <created>1743172818845</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1743172818845</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -394,10 +405,10 @@
     <SUITE FILE_PATH="coverage/faceswap_facefusion$ui__1_.coverage" NAME="ui (1) 覆盖结果" MODIFIED="1742567304173" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$test.coverage" NAME="test 覆盖结果" MODIFIED="1740743036190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$video_processing.coverage" NAME="video_processing 覆盖结果" MODIFIED="1741102693688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743172538225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743423409871" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$main.coverage" NAME="main 覆盖结果" MODIFIED="1742556813466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_ui.coverage" NAME="realtime_ui 覆盖结果" MODIFIED="1743164061618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$image_ui.coverage" NAME="image_ui 覆盖结果" MODIFIED="1743166107168" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$image_ui.coverage" NAME="image_ui 覆盖结果" MODIFIED="1743414934807" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_face_swap.coverage" NAME="realtime_face_swap 覆盖结果" MODIFIED="1742879173551" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

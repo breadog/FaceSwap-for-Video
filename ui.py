@@ -134,7 +134,7 @@ class DragDropLabel(QLabel):
 
 # ------------------------- 处理线程 -------------------------
 class ProcessingThread(QThread):
-    progress_updated = pyqtSignal(int)  # 进度信号
+    progress_updated = pyqtSignal(int, int)  # 进度信号
     stage_updated = pyqtSignal(str)  # 阶段更新信号
     processing_finished = pyqtSignal(bool)  # 处理完成信号，带成功/失败状态
 
@@ -168,10 +168,14 @@ class ProcessingThread(QThread):
             target_files = [f for f in os.listdir('temp_frames')
                             if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
             total_frames = len(target_files)
+            self.total_frames = total_frames
 
             for idx, frame_file in enumerate(target_files):
                 frame_path = os.path.join('temp_frames', frame_file)
                 output_path = os.path.join('temp_frames/processed', f"swapped_{frame_file}")
+
+                #发射进度信号
+                self.progress_updated.emit(idx + 1, total_frames)
 
                 # 严格验证帧有效性
                 frame = cv2.imread(frame_path)
@@ -186,10 +190,12 @@ class ProcessingThread(QThread):
                 target_dir=os.path.join('temp_frames'),
                 output_dir=os.path.join('temp_frames/processed'),
                 original_fps=original_fps,
+                status_callback=self.stage_updated.emit,
+                progress_callback=self.progress_updated.emit  # 传递进度回调
             )
 
-            progress = int((idx + 1) / total_frames * 100)
-            self.progress_updated.emit(progress)
+            # progress = int((idx + 1) / total_frames * 100)
+            # self.progress_updated.emit(progress)
 
             # 阶段3: 生成视频
             self.stage_updated.emit("正在生成最终视频...")
@@ -320,8 +326,9 @@ class MainWindow(QMainWindow):
         self.progress = QProgressBar()
         self.progress.setVisible(False)
         self.progress.setMinimum(0)
-        self.progress.setMaximum(100)
-        self.progress.setFormat("%p% (%v/%m 帧)")
+        self.progress.setMaximum(0)
+        self.progress.setFormat("等待开始...")
+        #self.progress.setFormat("%p% (%v/%m 帧)")
         
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignCenter)
@@ -437,8 +444,10 @@ class MainWindow(QMainWindow):
 
         self.progress.setVisible(True)
         self.progress.setValue(0)
+        self.progress.setMaximum(0)
+        self.progress.setFormat("准备中...")
 
-        #启动换脸后先隐藏按钮
+        # 启动换脸后先隐藏按钮
         self.btn_process.setEnabled(False)
         self.btn_camera.setEnabled(False)
         self.btn_switch_mode.setEnabled(False)
@@ -453,11 +462,25 @@ class MainWindow(QMainWindow):
         self.worker.processing_finished.connect(self.on_processing_finished)
         self.worker.start()
 
-    def update_progress(self, value):
-        self.progress.setValue(value)
 
     def update_status(self, message):
+        """更新状态标签"""
         self.status_label.setText(message)
+
+
+    # def update_progress(self, value):
+    #     self.progress.setValue(value)
+
+    def update_progress(self, current, total):
+        """更新进度显示"""
+        if self.progress.maximum() != total:
+            self.progress.setMaximum(total)
+            self.progress.setFormat(f"已处理 %v/%m 帧 (%.1f%)")
+
+        self.progress.setValue(current)
+        # 计算百分比
+        percent = (current / total) * 100 if total > 0 else 0
+        self.progress.setFormat(f"已处理 {current}/{total} 帧 ({percent:.1f}%)")
 
     def on_processing_finished(self, success):
         try:

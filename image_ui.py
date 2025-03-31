@@ -67,6 +67,22 @@ class ProcessingThread(QThread):
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         self.output_path = os.path.join("single_picture", f"result_{timestamp}.jpg")
 
+    def find_newest_result(self):
+        """查找最新生成的带序号结果文件"""
+        result_files = [
+            f for f in os.listdir("single_picture")
+            if re.match(r"result_\d{4}\.jpg", f)
+        ]
+        if not result_files:
+            return None
+        # 按文件名中的序号排序
+        sorted_files = sorted(
+            result_files,
+            key=lambda x: int(re.search(r"_(\d{4})\.jpg", x).group(1)),
+            reverse=True
+        )
+        return os.path.join("single_picture", sorted_files[0])
+
     def run(self):
         try:
             self.status_updated.emit("正在加载图片...")
@@ -89,25 +105,20 @@ class ProcessingThread(QThread):
             
             # 等待文件写入完成
             time.sleep(0.5)
-            
-            # 检查结果文件是否存在
-            if not os.path.exists("result.jpg"):
-                raise Exception("处理完成但未找到结果文件")
+
+            result_path = self.find_newest_result()
+            if not result_path or not os.path.exists(result_path):
+                raise Exception("未找到结果文件，可能生成失败")
             
             # 读取结果图片
-            result_img = cv2.imread("result.jpg")
+            result_img = cv2.imread(result_path)
             if result_img is None:
                 raise Exception("无法读取结果图片")
             
             # 保存到指定位置
             if not cv2.imwrite(self.output_path, result_img):
                 raise Exception("无法保存结果图片")
-            
-            # 删除临时文件
-            try:
-                os.remove("result.jpg")
-            except Exception as e:
-                print(f"临时文件删除失败: {str(e)}")
+
             
             self.progress_updated.emit(100)
             self.finished.emit(True, self.output_path)
