@@ -17,6 +17,7 @@ from video_processing import extract_frames_and_audio
 from refresh_manager import RefreshManager  # 导入刷新管理器
 from video_slider import VideoSliderManager  # 导入进度条管理器
 
+
 # ------------------------- 视频播放组件 -------------------------
 class VideoPlayer(QLabel):
     frame_updated = pyqtSignal(int)
@@ -83,7 +84,7 @@ class VideoPlayer(QLabel):
                     frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)
                 elif frame.shape[2] == 4:  # 如果是RGBA
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
-                
+
                 # 转换为RGB
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 return frame
@@ -174,7 +175,7 @@ class ProcessingThread(QThread):
                 frame_path = os.path.join('temp_frames', frame_file)
                 output_path = os.path.join('temp_frames/processed', f"swapped_{frame_file}")
 
-                #发射进度信号
+                # 发射进度信号
                 self.progress_updated.emit(idx + 1, total_frames)
 
                 # 严格验证帧有效性
@@ -219,6 +220,7 @@ class ProcessingThread(QThread):
             self.wait()
         print("线程资源已释放")
 
+
 # ------------------------- 主窗口 -------------------------
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -234,7 +236,7 @@ class MainWindow(QMainWindow):
         self.play_timer.timeout.connect(self.update_frames)
         self.is_playing = False
         self.current_frame = 0
-        
+
         # 初始化音频播放器
         self.media_player = QMediaPlayer()
         self.media_player.stateChanged.connect(self.on_media_state_changed)
@@ -247,7 +249,7 @@ class MainWindow(QMainWindow):
 
         # 顶部工具栏
         toolbar_layout = QHBoxLayout()
-        
+
         # 刷新按钮
         self.btn_refresh = QPushButton("⟳ 刷新")
         self.btn_refresh.clicked.connect(self.restart_ui)
@@ -268,7 +270,7 @@ class MainWindow(QMainWindow):
                 background-color: #0D47A1;
             }
         """)
-        
+
         toolbar_layout.addWidget(self.btn_refresh)
         toolbar_layout.addStretch()  # 添加弹性空间，使刷新按钮靠左
 
@@ -307,7 +309,7 @@ class MainWindow(QMainWindow):
         VideoSliderManager.setup_slider(self)  # 使用管理器设置进度条
 
         self.time_label = QLabel("00:00 / 00:00")
-        
+
         # 添加音量控制
         self.volume_slider = QSlider(Qt.Horizontal)
         self.volume_slider.setMaximum(100)
@@ -328,33 +330,33 @@ class MainWindow(QMainWindow):
         self.progress.setMinimum(0)
         self.progress.setMaximum(0)
         self.progress.setFormat("等待开始...")
-        #self.progress.setFormat("%p% (%v/%m 帧)")
-        
+        # self.progress.setFormat("%p% (%v/%m 帧)")
+
         self.status_label = QLabel("")
         self.status_label.setAlignment(Qt.AlignCenter)
         self.status_label.setStyleSheet("color: #666;")
-        
+
         progress_layout.addWidget(self.progress)
         progress_layout.addWidget(self.status_label)
 
         # 底部按钮区域
         bottom_layout = QHBoxLayout()
-        
+
         # 处理按钮
         self.btn_process = QPushButton("开始处理")
         self.btn_process.clicked.connect(self.start_processing)
         self.btn_process.setMinimumHeight(40)
-        
+
         # 转换单图模式按钮
         self.btn_switch_mode = QPushButton("转换单图模式")
         self.btn_switch_mode.clicked.connect(self.switch_to_image_mode)
         self.btn_switch_mode.setMinimumHeight(40)
-        
+
         # 切换到摄像头模式按钮
         self.btn_camera = QPushButton("切换到摄像头模式")
         self.btn_camera.clicked.connect(self.switch_to_camera_mode)
         self.btn_camera.setMinimumHeight(40)
-        
+
         # 设置按钮样式
         button_style = """
             QPushButton {
@@ -375,7 +377,7 @@ class MainWindow(QMainWindow):
         self.btn_process.setStyleSheet(button_style)
         self.btn_switch_mode.setStyleSheet(button_style)
         self.btn_camera.setStyleSheet(button_style)
-        
+
         bottom_layout.addWidget(self.btn_process)
         bottom_layout.addWidget(self.btn_switch_mode)
         bottom_layout.addWidget(self.btn_camera)
@@ -403,10 +405,10 @@ class MainWindow(QMainWindow):
                 self.slider.setMaximum(self.source_video.total_frames)
                 self.btn_play.setEnabled(True)
                 self.update_slider()
-                
+
                 # 设置音频
                 self.media_player.setMedia(QMediaContent(QUrl.fromLocalFile(file_path)))
-                
+
                 # 显示第一帧
                 first_frame = self.source_video.get_frame(0)
                 if first_frame is not None:
@@ -462,11 +464,9 @@ class MainWindow(QMainWindow):
         self.worker.processing_finished.connect(self.on_processing_finished)
         self.worker.start()
 
-
     def update_status(self, message):
         """更新状态标签"""
         self.status_label.setText(message)
-
 
     # def update_progress(self, value):
     #     self.progress.setValue(value)
@@ -489,55 +489,55 @@ class MainWindow(QMainWindow):
             self.btn_process.setEnabled(True)
             self.btn_camera.setEnabled(True)
             self.btn_switch_mode.setEnabled(True)
-            
+
             if success:
                 # 确保输出视频文件存在
                 output_path = os.path.abspath("output.mp4")
                 if not os.path.exists(output_path):
                     raise FileNotFoundError(f"输出视频文件不存在: {output_path}")
-                
+
                 # 等待文件写入完成
                 time.sleep(1)
-                
+
                 # 重置输出视频组件
                 if self.output_video.cap is not None:
                     self.output_video.cap.release()
                     self.output_video.cap = None
-                
+
                 # 加载新视频
                 if not self.output_video.load_video(output_path):
                     raise RuntimeError("输出视频加载失败")
-                
+
                 # 同步视频参数
                 self.output_video.fps = self.source_video.fps  # 使用相同的帧率
                 self.slider.setMaximum(self.source_video.total_frames)
                 self.current_frame = 0
-                
+
                 # 确保两个视频都准备好
                 if self.source_video.cap is None or self.output_video.cap is None:
                     raise RuntimeError("视频组件未正确初始化")
-                
+
                 # 显示输出视频的第一帧
                 first_frame = self.output_video.get_frame(0)
                 if first_frame is not None:
                     self.display_frame(self.output_video, first_frame)
-                
+
                 # 更新显示
                 self.update_frames()
                 self.show_status("处理完成！视频已生成")
-                
+
                 # 重置播放状态
                 self.is_playing = False
                 self.btn_play.setText("▶")
                 if self.play_timer.isActive():
                     self.play_timer.stop()
-                
+
                 # 确保播放按钮可用
                 self.btn_play.setEnabled(True)
-                
+
             else:
                 self.show_status("处理失败！", error=True)
-                
+
         except Exception as e:
             print(f"错误: {str(e)}")
             self.show_status(f"错误: {str(e)}", error=True)
@@ -607,7 +607,7 @@ class MainWindow(QMainWindow):
         try:
             if frame is None:
                 return
-                
+
             h, w = frame.shape[:2]
             bytes_per_line = 3 * w
             q_img = QImage(frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
@@ -625,6 +625,17 @@ class MainWindow(QMainWindow):
 
     def set_volume(self, value):
         self.media_player.setVolume(value)
+
+    def on_slider_pressed(self):
+        """滑块开始拖动时的处理"""
+        self.was_playing = self.is_playing  # 保存当前播放状态
+        if self.is_playing:
+            self.toggle_play()
+
+    def on_slider_released(self):
+        """滑块释放后的处理"""
+        if self.was_playing:
+            self.toggle_play()
 
     def on_media_state_changed(self, state):
         if state == QMediaPlayer.StoppedState:
@@ -660,11 +671,11 @@ class MainWindow(QMainWindow):
             # 停止播放
             if self.play_timer.isActive():
                 self.play_timer.stop()
-            
+
             # 停止并释放音频播放器
             self.media_player.stop()
             self.media_player.deleteLater()
-            
+
             # 释放所有视频资源
             if hasattr(self, 'source_video') and self.source_video.cap is not None:
                 self.source_video.cap.release()
