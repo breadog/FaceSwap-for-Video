@@ -237,6 +237,8 @@ class MainWindow(QMainWindow):
         self.is_playing = False
         self.current_frame = 0
 
+        self.is_slider_dragging = False
+
         # 初始化音频播放器
         self.media_player = QMediaPlayer()
         self.media_player.stateChanged.connect(self.on_media_state_changed)
@@ -566,38 +568,66 @@ class MainWindow(QMainWindow):
             self.play_timer.stop()
             self.media_player.pause()  # 暂停音频
 
+    # def update_frames(self):
+    #     try:
+    #         if not self.is_playing:
+    #             return
+    #
+    #         # 计算应该推进的帧数
+    #         current_time = time.time()
+    #         elapsed = current_time - self.last_frame_time
+    #         frames_to_advance = int(elapsed * self.source_video.fps)
+    #
+    #         # 至少推进1帧
+    #         if frames_to_advance < 1:
+    #             return
+    #
+    #         # 更新当前帧
+    #         self.current_frame += frames_to_advance
+    #         self.last_frame_time = current_time
+    #
+    #         # 检查边界
+    #         if self.current_frame >= self.source_video.total_frames:
+    #             self.current_frame = 0
+    #
+    #         # 获取并显示当前帧
+    #         src_frame = self.source_video.get_frame(self.current_frame)
+    #         out_frame = self.output_video.get_frame(self.current_frame)
+    #
+    #         if src_frame is not None:
+    #             self.display_frame(self.source_video, src_frame)
+    #         if out_frame is not None:
+    #             self.display_frame(self.output_video, out_frame)
+    #
+    #         self.update_slider()
+    #
+    #     except Exception as e:
+    #         print(f"更新帧时出错: {str(e)}")
+    #         self.toggle_play()
     def update_frames(self):
         try:
-            if not self.is_playing:
-                return
+            if not self.is_playing and not self.is_slider_dragging:
+                return  # 非播放且非拖动状态不更新
 
-            # 计算应该推进的帧数
-            current_time = time.time()
-            elapsed = current_time - self.last_frame_time
-            frames_to_advance = int(elapsed * self.source_video.fps)
-
-            # 至少推进1帧
-            if frames_to_advance < 1:
-                return
-
-            # 更新当前帧
-            self.current_frame += frames_to_advance
-            self.last_frame_time = current_time
-
-            # 检查边界
-            if self.current_frame >= self.source_video.total_frames:
-                self.current_frame = 0
-
-            # 获取并显示当前帧
+            # 直接使用current_frame，不计算时间差
             src_frame = self.source_video.get_frame(self.current_frame)
-            out_frame = self.output_video.get_frame(self.current_frame)
+            out_frame = self.output_video.get_frame(self.current_frame) if self.output_video.cap else None
 
             if src_frame is not None:
                 self.display_frame(self.source_video, src_frame)
             if out_frame is not None:
                 self.display_frame(self.output_video, out_frame)
 
-            self.update_slider()
+            # 更新进度条（仅在非拖动状态）
+            if not self.is_slider_dragging:
+                self.slider.setValue(self.current_frame)
+                VideoSliderManager.update_slider_time(self)
+
+            # 自动播放时递增帧
+            if self.is_playing:
+                self.current_frame += 1
+                if self.current_frame >= self.source_video.total_frames:
+                    self.current_frame = 0
 
         except Exception as e:
             print(f"更新帧时出错: {str(e)}")
@@ -618,6 +648,8 @@ class MainWindow(QMainWindow):
             print(f"显示帧时出错: {str(e)}")
 
     def update_slider(self):
+        if not self.is_slider_dragging:  # 仅在非拖动状态更新滑块
+            self.slider.setValue(self.current_frame)
         VideoSliderManager.update_slider_time(self)
 
     def seek_frame(self, position):

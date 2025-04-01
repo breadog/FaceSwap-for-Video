@@ -77,8 +77,24 @@ import time
 
 class VideoSliderManager:
     @staticmethod
+    def setup_slider(window):
+        window.slider.sliderMoved.connect(lambda pos: VideoSliderManager.seek_frame(window, pos))
+        # 修改信号连接，标记拖动状态
+        window.slider.sliderPressed.connect(lambda: setattr(window, 'is_slider_dragging', True))
+        window.slider.sliderReleased.connect(lambda: setattr(window, 'is_slider_dragging', False))
+
     def seek_frame(window, position):
         """处理视频进度条拖动事件（优化版）"""
+
+        # 强化空值检查
+        if (
+                not hasattr(window, 'source_video') or
+                not window.source_video.cap or
+                not window.source_video.cap.isOpened()
+        ):
+            print("错误：视频未加载或已关闭")
+            return
+
         if not window.source_video.cap or not window.source_video.cap.isOpened():
             return
 
@@ -110,8 +126,10 @@ class VideoSliderManager:
                 return
 
             # 同步音频（新增有效性检查）
-            if (window.media_player.media().isValid() and
-                    window.source_video.fps > 0):
+            if (
+                    not window.media_player.media().isNull() and  # 检查媒体内容是否为空
+                    window.source_video.fps > 0
+            ):
                 try:
                     audio_position = int((position / window.source_video.fps) * 1000)
                     window.media_player.setPosition(audio_position)
@@ -121,6 +139,9 @@ class VideoSliderManager:
             # 恢复播放状态
             if was_playing:
                 window.toggle_play()
+                window.toggle_play()  # 重新开
+
+            window.update_frames()
 
         except Exception as e:
             print(f"进度条操作失败: {str(e)}")
@@ -140,6 +161,10 @@ class VideoSliderManager:
             # 格式化时间为 MM:SS.ms
             total_time = f"{int(total_sec // 60):02d}:{int(total_sec % 60):02d}.{int((total_sec % 1) * 1000):03d}"
             current_time = f"{int(current_sec // 60):02d}:{int(current_sec % 60):02d}.{int((current_sec % 1) * 1000):03d}"
+
+            window.time_label.setText(f"{current_time} / {total_time}")
+
+            window.slider.setValue(window.current_frame)
 
             window.time_label.setText(f"{current_time} / {total_time}")
 
