@@ -34,21 +34,36 @@ class VideoPlayer(QLabel):
         self.mutex = QMutex()
         self.last_frame_time = 0  # 添加时间戳记录
 
+    # def release(self):
+    #     with self.mutex:
+    #         if self.cap:
+    #             self.cap.release()
+    #         self.cap = None  # 必须置空
+    #         self.total_frames = 0
+    #         self.current_frame = 0
+    #         print("视频资源已安全释放")
+
     def load_video(self, path):
         self.mutex.lock()
         try:
             if self.cap:
                 self.cap.release()
             self.cap = cv2.VideoCapture(path)
-            if not self.cap.isOpened():
-                raise ValueError(f"无法打开视频文件 {path}")
+            # if not self.cap.isOpened():
+            #     raise ValueError(f"无法打开视频文件 {path}")
 
             # 正确获取视频参数
             self.total_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
             self.fps = self.cap.get(cv2.CAP_PROP_FPS)
             # 处理异常帧率（部分视频可能返回0）
             if self.fps <= 0:
-                self.fps = 30  # 设置默认值
+                # 尝试通过总帧数和时长计算
+                total_duration = self.cap.get(cv2.CAP_PROP_POS_MSEC) / 1000
+                if total_duration > 0:
+                    self.fps = self.total_frames / total_duration
+                else:
+                    self.fps = 30  # 最终默认值
+
             print(f"已加载视频：帧率={self.fps}, 总帧数={self.total_frames}")
             return True
         except Exception as e:
@@ -58,7 +73,8 @@ class VideoPlayer(QLabel):
             self.mutex.unlock()
 
     def get_frame(self, frame_num):
-        if not self.cap or not self.cap.isOpened():
+        if self.cap is None or not self.cap.isOpened() or not self.cap.grab():
+            print("警告：视频资源未正确初始化")
             return None
 
         self.mutex.lock()
@@ -235,6 +251,7 @@ class MainWindow(QMainWindow):
         self.play_timer = QTimer()
         self.play_timer.timeout.connect(self.update_frames)
         self.is_playing = False
+        self.is_seeking = False
         self.current_frame = 0
 
         self.is_slider_dragging = False
@@ -403,7 +420,9 @@ class MainWindow(QMainWindow):
             video_info = video_processing.get_video_info(file_path)
             if self.source_video.load_video(file_path):
                 # 使用video_info中的fps
-                self.source_video.fps = video_info['fps']
+                # self.source_video.fps = video_info['fps']
+                actual_fps = self.source_video.fps
+                print(f"实际使用的播放帧率: {actual_fps}")
                 self.slider.setMaximum(self.source_video.total_frames)
                 self.btn_play.setEnabled(True)
                 self.update_slider()
@@ -554,80 +573,117 @@ class MainWindow(QMainWindow):
     def toggle_play(self):
         self.is_playing = not self.is_playing
         self.btn_play.setText("⏸" if self.is_playing else "▶")
+        self.last_frame_time = time.time()  # 重置时间戳
 
         if self.is_playing:
             # 根据实际帧率计算间隔（单位：ms）
             actual_fps = self.source_video.fps
-            interval = int(1000 / actual_fps)  # 动态计算间隔
+            interval = max(1, int(1000 / actual_fps))  # 动态计算间隔
             print(f"启动播放器，帧率={actual_fps}，间隔={interval}ms")
 
             self.last_frame_time = time.time()
             self.play_timer.start(interval)  # 动态设置定时器
             self.media_player.play()  # 播放音频
+            # # 使用实际帧率计算间隔
+            # actual_fps = self.source_video.fps if self.source_video.fps > 0 else 30
+            # interval = max(10, int(1000 / actual_fps))  # 最小10ms间隔
+            # self.play_timer.start(interval)
+            # self.media_player.play()
         else:
             self.play_timer.stop()
-            self.media_player.pause()  # 暂停音频
+            self.media_player.pause()
 
     # def update_frames(self):
     #     try:
-    #         if not self.is_playing:
+    #         if not self.is_playing and not self.is_slider_dragging:
     #             return
-    #
-    #         # 计算应该推进的帧数
-    #         current_time = time.time()
-    #         elapsed = current_time - self.last_frame_time
-    #         frames_to_advance = int(elapsed * self.source_video.fps)
-    #
-    #         # 至少推进1帧
-    #         if frames_to_advance < 1:
-    #             return
-    #
-    #         # 更新当前帧
-    #         self.current_frame += frames_to_advance
-    #         self.last_frame_time = current_time
-    #
-    #         # 检查边界
-    #         if self.current_frame >= self.source_video.total_frames:
-    #             self.current_frame = 0
     #
     #         # 获取并显示当前帧
     #         src_frame = self.source_video.get_frame(self.current_frame)
-    #         out_frame = self.output_video.get_frame(self.current_frame)
+    #         out_frame = self.output_video.get_frame(self.current_frame) if self.output_video.cap else None
+    #         start_time = time.time()
     #
     #         if src_frame is not None:
     #             self.display_frame(self.source_video, src_frame)
     #         if out_frame is not None:
     #             self.display_frame(self.output_video, out_frame)
     #
-    #         self.update_slider()
+    #         # 更新进度条和时间显示
+    #         if not self.is_slider_dragging:
+    #             self.slider.setValue(self.current_frame)
+    #             if self.source_video.fps > 0:
+    #                 current_time = self.current_frame / self.source_video.fps
+    #                 total_time = self.source_video.total_frames / self.source_video.fps
+    #                 current_str = time.strftime('%M:%S', time.gmtime(current_time))
+    #                 total_str = time.strftime('%M:%S', time.gmtime(total_time))
+    #                 self.time_label.setText(f"{current_str} / {total_str}")
+    #
+    #         # 自动播放时递增帧
+    #         if self.is_playing:
+    #             self.current_frame += 1
+    #             if self.current_frame >= self.source_video.total_frames:
+    #                 self.current_frame = 0
+    #                 self.media_player.setPosition(0)
+    #
+    #         # # 动态调整播放速度
+    #         # if self.is_playing:
+    #         #     elapsed = time.time() - start_time
+    #         #     expected_time = 1 / self.source_video.fps
+    #         #     if elapsed < expected_time:
+    #         #         time.sleep(expected_time - elapsed)  # 补足间隔时间
+    #         #
+    #         #     self.current_frame += 1
+    #         #     if self.current_frame >= self.source_video.total_frames:
+    #         #         self.current_frame = 0
     #
     #     except Exception as e:
     #         print(f"更新帧时出错: {str(e)}")
     #         self.toggle_play()
+
     def update_frames(self):
         try:
             if not self.is_playing and not self.is_slider_dragging:
-                return  # 非播放且非拖动状态不更新
+                return
 
-            # 直接使用current_frame，不计算时间差
-            src_frame = self.source_video.get_frame(self.current_frame)
-            out_frame = self.output_video.get_frame(self.current_frame) if self.output_video.cap else None
+            # 核心修改：从音频播放器获取精确时间戳
+            audio_position = self.media_player.position()  # 单位：毫秒
+            current_time = audio_position / 1000  # 转换为秒
 
-            if src_frame is not None:
-                self.display_frame(self.source_video, src_frame)
-            if out_frame is not None:
-                self.display_frame(self.output_video, out_frame)
+            # 根据实际时间计算当前帧（替代逐帧递增）
+            calculated_frame = int(current_time * self.source_video.fps)
+            calculated_frame = max(0, min(calculated_frame, self.source_video.total_frames - 1))
 
-            # 更新进度条（仅在非拖动状态）
-            if not self.is_slider_dragging:
+            # 仅当帧号变化时更新画面（避免重复渲染）
+            if calculated_frame != self.current_frame:
+                self.current_frame = calculated_frame
+
+                # 获取并显示当前帧
+                src_frame = self.source_video.get_frame(self.current_frame)
+                out_frame = self.output_video.get_frame(self.current_frame) if self.output_video.cap else None
+
+                if src_frame is not None:
+                    self.display_frame(self.source_video, src_frame)
+                if out_frame is not None:
+                    self.display_frame(self.output_video, out_frame)
+
+                # 更新进度条
                 self.slider.setValue(self.current_frame)
-                VideoSliderManager.update_slider_time(self)
 
-            # 自动播放时递增帧
-            if self.is_playing:
-                self.current_frame += 1
-                if self.current_frame >= self.source_video.total_frames:
-                    self.current_frame = 0
+            # 更新时间显示
+            if self.source_video.fps > 0:
+                total_time = self.source_video.total_frames / self.source_video.fps
+                current_str = time.strftime('%M:%S', time.gmtime(current_time))
+                total_str = time.strftime('%M:%S', time.gmtime(total_time))
+                self.time_label.setText(f"{current_str} / {total_str}")
+
+            # # 当播放到结尾时，重置所有状态
+            # if self.current_frame >= self.source_video.total_frames:
+            #     self.current_frame = 0
+            #     self.media_player.setPosition(0)  # 音频重置到起始
+            #     # 关键修复：重置视频捕获对象位置
+            #     if self.source_video.cap and self.source_video.cap.isOpened():
+            #         self.source_video.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            #         print("视频位置已重置到起始帧")
 
         except Exception as e:
             print(f"更新帧时出错: {str(e)}")
@@ -653,21 +709,58 @@ class MainWindow(QMainWindow):
         VideoSliderManager.update_slider_time(self)
 
     def seek_frame(self, position):
-        VideoSliderManager.seek_frame(self, position)
+        try:
+            if self.source_video.cap is None or not self.source_video.cap.isOpened():
+                print("警告：视频资源未正确初始化")
+                return
 
-    def set_volume(self, value):
-        self.media_player.setVolume(value)
+            # 确保位置在有效范围内
+            position = max(0, min(position, self.source_video.total_frames - 1))
+            
+            # 更新当前帧
+            self.current_frame = position
+            
+            # 获取并显示当前帧
+            src_frame = self.source_video.get_frame(position)
+            out_frame = self.output_video.get_frame(position) if self.output_video.cap else None
+            
+            if src_frame is not None:
+                self.display_frame(self.source_video, src_frame)
+            if out_frame is not None:
+                self.display_frame(self.output_video, out_frame)
+            
+            # 更新进度条和时间显示
+            self.slider.setValue(position)
+            if self.source_video.fps > 0:
+                current_time = position / self.source_video.fps
+                total_time = self.source_video.total_frames / self.source_video.fps
+                current_str = time.strftime('%M:%S', time.gmtime(current_time))
+                total_str = time.strftime('%M:%S', time.gmtime(total_time))
+                self.time_label.setText(f"{current_str} / {total_str}")
+            
+            # 同步音频位置
+            if self.media_player.state() == QMediaPlayer.PlayingState:
+                audio_position = int(current_time * 1000)  # 转换为毫秒
+                self.media_player.setPosition(audio_position)
+                
+        except Exception as e:
+            print(f"跳转帧时出错: {str(e)}")
 
     def on_slider_pressed(self):
         """滑块开始拖动时的处理"""
-        self.was_playing = self.is_playing  # 保存当前播放状态
+        self.is_slider_dragging = True
+        self.was_playing = self.is_playing
         if self.is_playing:
             self.toggle_play()
 
     def on_slider_released(self):
         """滑块释放后的处理"""
+        self.is_slider_dragging = False
         if self.was_playing:
             self.toggle_play()
+
+    def set_volume(self, value):
+        self.media_player.setVolume(value)
 
     def on_media_state_changed(self, state):
         if state == QMediaPlayer.StoppedState:

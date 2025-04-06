@@ -4,10 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="4/1 回退修改了一下">
+    <list default="true" id="5fc39e4e-270d-4e71-b8bb-0fd2fd9c8d9d" name="更改" comment="4/1 slider只在两个视频都有的时候能用">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_68landmarks.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_68landmarks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_enhancer.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_enhancer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_recognizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_recognizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/face_swap.py" beforeDir="false" afterPath="$PROJECT_DIR$/face_swap.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/video_slider.py" beforeDir="false" afterPath="$PROJECT_DIR$/video_slider.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolov8face.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolov8face.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -260,7 +265,20 @@
       <workItem from="1743162828431" duration="9111000" />
       <workItem from="1743412440239" duration="16072000" />
       <workItem from="1743490473504" duration="16226000" />
-      <workItem from="1743513999672" duration="5497000" />
+      <workItem from="1743513999672" duration="5788000" />
+      <workItem from="1743832276910" duration="11495000" />
+      <workItem from="1743931773714" duration="81000" />
+      <workItem from="1743931888036" duration="185000" />
+      <workItem from="1743932519367" duration="51000" />
+      <workItem from="1743932647659" duration="197000" />
+      <workItem from="1743932901694" duration="13000" />
+      <workItem from="1743933815397" duration="8000" />
+      <workItem from="1743933858161" duration="437000" />
+      <workItem from="1743935930911" duration="20000" />
+      <workItem from="1743936056341" duration="357000" />
+      <workItem from="1743936436216" duration="67000" />
+      <workItem from="1743936532197" duration="437000" />
+      <workItem from="1743936979510" duration="7400000" />
     </task>
     <task id="LOCAL-00001" summary="224">
       <option name="closed" value="true" />
@@ -390,7 +408,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743518137121</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="4/1 slider只在两个视频都有的时候能用">
+      <option name="closed" value="true" />
+      <created>1743520944440</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1743520944440</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -417,14 +443,15 @@
     <MESSAGE value="3/28 修补" />
     <MESSAGE value="3/31 进度条修改+图片人脸显示" />
     <MESSAGE value="4/1 回退修改了一下" />
-    <option name="LAST_COMMIT_MESSAGE" value="4/1 回退修改了一下" />
+    <MESSAGE value="4/1 slider只在两个视频都有的时候能用" />
+    <option name="LAST_COMMIT_MESSAGE" value="4/1 slider只在两个视频都有的时候能用" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/faceswap_facefusion$UI.coverage" NAME="ui 覆盖结果" MODIFIED="1742553495130" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$ui__1_.coverage" NAME="ui (1) 覆盖结果" MODIFIED="1742567304173" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$test.coverage" NAME="test 覆盖结果" MODIFIED="1740743036190" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$video_processing.coverage" NAME="video_processing 覆盖结果" MODIFIED="1741102693688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743520108070" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/faceswap_facefusion$ui.coverage" NAME="ui 覆盖结果" MODIFIED="1743944359104" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$main.coverage" NAME="main 覆盖结果" MODIFIED="1742556813466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$realtime_ui.coverage" NAME="realtime_ui 覆盖结果" MODIFIED="1743164061618" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/faceswap_facefusion$image_ui.coverage" NAME="image_ui 覆盖结果" MODIFIED="1743414934807" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
