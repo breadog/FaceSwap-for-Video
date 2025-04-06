@@ -768,6 +768,12 @@ class MainWindow(QMainWindow):
             self.btn_play.setText("▶")
             self.play_timer.stop()
             self.current_frame = 0
+            # 重置视频捕获对象位置
+            if self.source_video.cap and self.source_video.cap.isOpened():
+                self.source_video.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            if self.output_video.cap and self.output_video.cap.isOpened():
+                self.output_video.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            # 强制刷新画面
             self.update_frames()
 
     def on_media_position_changed(self, position):
