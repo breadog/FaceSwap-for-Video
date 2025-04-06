@@ -130,29 +130,31 @@ class ImageSwapWindow(QMainWindow):
     """单图换脸主窗口"""
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("人脸替换工具 - 单图模式")
+        self.setWindowTitle("单图换脸")
         self.setup_ui()
         self.file_paths = {
             "source": None,
             "target": None
         }
-
+        
+        # 设置固定窗口大小
+        self.setFixedSize(1280, 900)
 
     def setup_ui(self):
         main_widget = QWidget()
         layout = QVBoxLayout()
 
-        # 标题
-        title_label = QLabel("单图人脸替换")
-        title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("""
-            QLabel {
-                font-size: 24px;
-                color: #333;
-                margin: 20px;
-            }
-        """)
-        layout.addWidget(title_label)
+        # # 标题
+        # title_label = QLabel("单图人脸替换")
+        # title_label.setAlignment(Qt.AlignCenter)
+        # title_label.setStyleSheet("""
+        #     QLabel {
+        #         font-size: 24px;
+        #         color: #333;
+        #         margin: 20px;
+        #     }
+        # """)
+        # layout.addWidget(title_label)
 
         # 输入区域
         input_layout = QHBoxLayout()
@@ -291,7 +293,6 @@ class ImageSwapWindow(QMainWindow):
 
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
-        self.resize(1280, 800)
 
     def set_image(self, file_path, image_type):
         """设置图片"""

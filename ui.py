@@ -5,7 +5,7 @@ import cv2
 import time
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QFileDialog, QProgressBar, QSlider
+    QLabel, QPushButton, QFileDialog, QProgressBar, QSlider, QSizePolicy
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QMutex, QUrl
 from PyQt5.QtGui import QPixmap, QImage, QDragEnterEvent, QDropEvent
@@ -311,9 +311,10 @@ class MainWindow(QMainWindow):
         video_layout = QHBoxLayout()
         self.source_video = VideoPlayer()
         self.output_video = VideoPlayer()
+
         # 设置视频播放器的最小尺寸
-        self.source_video.setMinimumSize(600, 400)
-        self.output_video.setMinimumSize(600, 400)
+        self.source_video.setMinimumSize(640, 480)
+        self.output_video.setMinimumSize(640, 480)
         video_layout.addWidget(self.source_video)
         video_layout.addWidget(self.output_video)
 
@@ -321,6 +322,11 @@ class MainWindow(QMainWindow):
         control_layout = QHBoxLayout()
         self.btn_play = QPushButton("▶")
         self.btn_play.setFixedWidth(40)
+
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setMinimumHeight(25)  # 增加垂直高度
+        self.slider.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
         self.btn_play.clicked.connect(self.toggle_play)
         self.btn_play.setEnabled(False)
 
@@ -334,7 +340,7 @@ class MainWindow(QMainWindow):
         self.volume_slider.setMaximum(100)
         self.volume_slider.setValue(50)
         self.volume_slider.valueChanged.connect(self.set_volume)
-        self.volume_slider.setFixedWidth(100)
+        self.volume_slider.setFixedWidth(120)
 
         control_layout.addWidget(self.btn_play)
         control_layout.addWidget(self.slider)
@@ -411,7 +417,7 @@ class MainWindow(QMainWindow):
 
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
-        self.resize(1280, 800)
+        self.resize(1280, 900)
 
     def set_file(self, file_path, file_type):
         self.file_paths[file_type] = file_path
@@ -716,19 +722,19 @@ class MainWindow(QMainWindow):
 
             # 确保位置在有效范围内
             position = max(0, min(position, self.source_video.total_frames - 1))
-            
+
             # 更新当前帧
             self.current_frame = position
-            
+
             # 获取并显示当前帧
             src_frame = self.source_video.get_frame(position)
             out_frame = self.output_video.get_frame(position) if self.output_video.cap else None
-            
+
             if src_frame is not None:
                 self.display_frame(self.source_video, src_frame)
             if out_frame is not None:
                 self.display_frame(self.output_video, out_frame)
-            
+
             # 更新进度条和时间显示
             self.slider.setValue(position)
             if self.source_video.fps > 0:
@@ -737,12 +743,12 @@ class MainWindow(QMainWindow):
                 current_str = time.strftime('%M:%S', time.gmtime(current_time))
                 total_str = time.strftime('%M:%S', time.gmtime(total_time))
                 self.time_label.setText(f"{current_str} / {total_str}")
-            
+
             # 同步音频位置
             if self.media_player.state() == QMediaPlayer.PlayingState:
                 audio_position = int(current_time * 1000)  # 转换为毫秒
                 self.media_player.setPosition(audio_position)
-                
+
         except Exception as e:
             print(f"跳转帧时出错: {str(e)}")
 

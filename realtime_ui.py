@@ -85,12 +85,18 @@ class CameraWidget(QLabel):
 class RealtimeFaceSwapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("实时人脸替换 - 摄像头")
+        self.setWindowTitle("实时换脸")
         self.source_embedding = None
         self.setup_ui()
         self.last_valid_box = None
         self.frame_count = 0
         self.detect_interval = 5  # 每5帧检测一次人脸
+        self.file_paths = {
+            "source": None
+        }
+        
+        # 设置固定窗口大小
+        self.setFixedSize(1280, 900)
 
         # 自动启动处理定时器
         if self.camera_view.cap:
@@ -99,54 +105,77 @@ class RealtimeFaceSwapWindow(QMainWindow):
     def setup_ui(self):
         main_widget = QWidget()
         main_layout = QVBoxLayout()
-        control_layout = QHBoxLayout()
+
+        # ======== 拖拽区域 ========
+        self.drop_area = DragDropLabel("拖拽源人脸图片至此\n(.jpg, .png)", (".jpg", ".png"))
+        self.drop_area.fileDropped.connect(self.load_source_image)
+        main_layout.addWidget(self.drop_area)
+
+        # ======== 摄像头显示区域 ========
+        self.camera_view = CameraWidget()
+        self.camera_view.setMinimumSize(640, 580)
+        main_layout.addWidget(self.camera_view, stretch=1)  # 添加拉伸因子
+
+        # ======== 底部按钮容器 ========
+        bottom_container = QWidget()
+        bottom_layout = QHBoxLayout()
+        bottom_container.setLayout(bottom_layout)
 
         # 切换到视频模式按钮
         self.btn_video_mode = QPushButton("切换到视频处理")
         self.btn_video_mode.setStyleSheet("""
-                    QPushButton {
-                        background-color: #2196F3;
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 5px;
-                        min-width: 120px;
-                    }
-                    QPushButton:hover { background-color: #1976D2; }
-                """)
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 8px 16px;
+                font-size: 14px;
+                min-width: 120px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QPushButton:disabled {
+                background-color: #cccccc;
+            }
+        """)
         self.btn_video_mode.clicked.connect(self.switch_to_video_mode)
 
         # 切换到图片模式按钮
         self.btn_image_mode = QPushButton("切换到图片处理")
         self.btn_image_mode.setStyleSheet("""
-                    QPushButton {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 8px 16px;
-                        border-radius: 5px;
-                        min-width: 120px;
-                    }
-                    QPushButton:hover { background-color: #45a049; }
-                """)
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 8px 16px;
+                font-size: 14px;
+                min-width: 120px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QPushButton:disabled {
+                background-color: #cccccc;
+            }
+        """)
         self.btn_image_mode.clicked.connect(self.switch_to_image_mode)
 
-        control_layout.addWidget(self.btn_video_mode)
-        control_layout.addWidget(self.btn_image_mode)
-        control_layout.addStretch()
-        main_layout.addLayout(control_layout)
+        # 添加按钮到底部布局
+        bottom_layout.addStretch(1)
+        bottom_layout.addWidget(self.btn_video_mode)
+        bottom_layout.addWidget(self.btn_image_mode)
+        bottom_layout.addStretch(1)
 
-        # 拖拽区域
-        self.drop_area = DragDropLabel("拖拽源人脸图片至此\n(.jpg, .png)", (".jpg", ".png"))
-        self.drop_area.fileDropped.connect(self.load_source_image)
-        main_layout.addWidget(self.drop_area)
-
-        # 摄像头显示区域
-        self.camera_view = CameraWidget()
-        self.camera_view.setMinimumSize(640, 480)
-        main_layout.addWidget(self.camera_view)
-
-        # ======== 底部状态栏 ========
+        # ======== 状态栏 ========
         self.status_label = QLabel("就绪 | 等待源人脸图片")
         self.status_label.setStyleSheet("color: #666; font-size: 12px;")
+
+        # 组装主布局
+        main_layout.addStretch(1)  # 添加弹性空间推动内容向上
+        main_layout.addWidget(bottom_container)
         main_layout.addWidget(self.status_label)
 
         # 处理定时器
@@ -155,7 +184,6 @@ class RealtimeFaceSwapWindow(QMainWindow):
 
         main_widget.setLayout(main_layout)
         self.setCentralWidget(main_widget)
-        self.resize(1280, 800)
 
     def switch_to_video_mode(self):
         """切换到视频处理模式"""
