@@ -123,51 +123,50 @@ class RealtimeFaceSwapWindow(QMainWindow):
 
         # 切换到视频模式按钮
         self.btn_video_mode = QPushButton("切换到视频处理")
+        self.btn_video_mode.setFixedSize(640, 20)
         self.btn_video_mode.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                font-size: 14px;
-                min-width: 120px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-            }
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            min-width: 160px;
+            min-height: 40px;
+        }
+        QPushButton:hover { background-color: #45a049; }
+        QPushButton:pressed { background-color: #357a38; }
+        QPushButton:disabled { background-color: #cccccc; }
         """)
         self.btn_video_mode.clicked.connect(self.switch_to_video_mode)
 
         # 切换到图片模式按钮
         self.btn_image_mode = QPushButton("切换到图片处理")
+        self.btn_image_mode.setFixedSize(640, 20)
         self.btn_image_mode.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                font-size: 14px;
-                min-width: 120px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-            QPushButton:disabled {
-                background-color: #cccccc;
-            }
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 14px;
+            min-width: 160px;
+            min-height: 40px;
+        }
+        QPushButton:hover { background-color: #45a049; }
+        QPushButton:pressed { background-color: #357a38; }
+        QPushButton:disabled { background-color: #cccccc; }
         """)
         self.btn_image_mode.clicked.connect(self.switch_to_image_mode)
 
         # 添加按钮到底部布局
-        bottom_layout.addStretch(1)
+
         bottom_layout.addWidget(self.btn_video_mode)
+        bottom_layout.addSpacing(20)  # 添加按钮间距
         bottom_layout.addWidget(self.btn_image_mode)
-        bottom_layout.addStretch(1)
+
 
         # ======== 状态栏 ========
         self.status_label = QLabel("就绪 | 等待源人脸图片")
